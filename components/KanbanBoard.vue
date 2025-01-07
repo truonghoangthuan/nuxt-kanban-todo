@@ -32,14 +32,14 @@
         </template>
       </draggable>
       <div v-if="columnIndex === 0" class="add-task-button">
-        <button @click="showForm = !showForm">{{ showForm ? 'Cancel' : 'Add Task' }}</button>
+        <button @click="showForm ? cancelEdit() : (showForm = true)">{{ showForm ? 'Cancel' : 'Add Task' }}</button>
       </div>
       <div v-if="showForm && columnIndex === 0" class="add-task-form">
         <input v-model="newTask.name" placeholder="Task name" />
         <span v-if="nameError" class="error-message">Task name cannot be empty</span>
         <input v-model="newTask.assignee" placeholder="Assignee" />
         <span v-if="assigneeError" class="error-message">Assignee cannot be empty</span>
-        <button @click="addTask">Add</button>
+        <button @click="addTask">Confirm</button>
       </div>
     </div>
   </div>
@@ -126,6 +126,14 @@ export default {
       this.showForm = true;
       this.editingTaskIndex = taskIndex;
       this.editingColumnIndex = columnIndex;
+    },
+    cancelEdit() {
+      this.newTask.name = '';
+      this.newTask.assignee = '';
+      this.newTask.status = 'To Do';
+      this.editingTaskIndex = null;
+      this.editingColumnIndex = null;
+      this.showForm = false;
     },
     getColumnClass(index) {
       switch (index) {
