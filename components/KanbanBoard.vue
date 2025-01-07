@@ -18,10 +18,13 @@
         @start="dragging = true"
         @end="dragging = false"
       >
-        <template #item="{ element }">
+        <template #item="{ element, index }">
           <div class="task-item">
-            <div class="task-name">{{ element.name }}</div>
-            <div class="assignee">Assigned to: {{ element.assignee }}</div>
+            <div class="task-header">
+              <div class="task-name">{{ element.name }}</div>
+              <i class="fas fa-trash-alt delete-icon" @click="deleteTask(columnIndex, index)"></i>
+            </div>
+            <div class="assignee">Assignee: {{ element.assignee }}</div>
           </div>
         </template>
       </draggable>
@@ -100,6 +103,9 @@ export default {
         }
       }
     },
+    deleteTask(columnIndex, taskIndex) {
+      this.columns[columnIndex].tasks.splice(taskIndex, 1);
+    },
     getColumnClass(index) {
       switch (index) {
         case 0:
@@ -117,10 +123,7 @@ export default {
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
-
 .kanban-board {
-  font-family: 'JetBrains Mono', monospace;
   display: flex;
   gap: 20px;
   padding: 20px;
@@ -137,15 +140,15 @@ export default {
 }
 
 .todo-column {
-  background-color: #f38181;
+  background-color: #f38181c4;
 }
 
 .in-progress-column {
-  background-color: #fce38a;
+  background-color: #fce38ac5;
 }
 
 .done-column {
-  background-color: #95e1d3;
+  background-color: #95e1d3c4;
 }
 
 .kanban-column-header {
@@ -175,16 +178,29 @@ export default {
   margin-bottom: 10px;
   border-radius: 6px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.task-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .task-name {
-  font-size: 1rem; /* Default font size for the task name */
+  font-size: 1rem;
 }
 
-.kanban-column .assignee {
-  font-size: 0.8rem; /* Smaller font size for the assignee */
+.assignee {
+  font-size: 0.8rem;
   color: #555;
   margin-top: 5px;
+}
+
+.delete-icon {
+  color: #e74c3c;
+  cursor: pointer;
 }
 
 .status-select {
@@ -225,6 +241,7 @@ export default {
 }
 
 .add-task-form input {
+  font-family: 'JetBrains Mono', monospace;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
