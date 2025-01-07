@@ -28,13 +28,23 @@
               </div>
             </div>
             <div class="assignee">Assignee: {{ element.assignee }}</div>
+            <div v-if="isEditingTask(columnIndex, index)" class="edit-task-form">
+              <input v-model="newTask.name" placeholder="Task name" />
+              <span v-if="nameError" class="error-message">Task name cannot be empty</span>
+              <input v-model="newTask.assignee" placeholder="Assignee" />
+              <span v-if="assigneeError" class="error-message">Assignee cannot be empty</span>
+              <button @click="updateTask">Confirm</button>
+              <button @click="cancelEdit">Cancel</button>
+            </div>
           </div>
         </template>
       </draggable>
       <div v-if="columnIndex === 0" class="add-task-button">
-        <button @click="showForm ? cancelEdit() : (showForm = true)">{{ showForm ? 'Cancel' : 'Add Task' }}</button>
+        <button @click="showAddForm ? cancelAddTask() : (cancelEdit(), (showAddForm = true))">
+          {{ showAddForm ? 'Cancel' : 'Add Task' }}
+        </button>
       </div>
-      <div v-if="showForm && columnIndex === 0" class="add-task-form">
+      <div v-if="showAddForm && columnIndex === 0" class="add-task-form">
         <input v-model="newTask.name" placeholder="Task name" />
         <span v-if="nameError" class="error-message">Task name cannot be empty</span>
         <input v-model="newTask.assignee" placeholder="Assignee" />
@@ -76,7 +86,7 @@ export default {
         },
       ],
       newTask: { name: '', assignee: '', status: 'To Do' },
-      showForm: false,
+      showAddForm: false,
       assigneeError: false,
       nameError: false,
       dragging: false,
@@ -89,31 +99,11 @@ export default {
       this.nameError = this.newTask.name.trim() === '';
       this.assigneeError = this.newTask.assignee.trim() === '';
       if (!this.nameError && !this.assigneeError) {
-        if (this.editingTaskIndex !== null && this.editingColumnIndex !== null) {
-          // Update the existing task
-          this.columns[this.editingColumnIndex].tasks[this.editingTaskIndex] = { ...this.newTask };
-          this.editingTaskIndex = null;
-          this.editingColumnIndex = null;
-        } else {
-          // Add a new task
-          this.columns[0].tasks.push({ ...this.newTask });
-        }
+        this.columns[0].tasks.push({ ...this.newTask });
         this.newTask.name = '';
         this.newTask.assignee = '';
         this.newTask.status = 'To Do';
-        this.showForm = false;
-      }
-    },
-    changeStatus(task, taskIndex) {
-      const currentColumn = this.columns.find((column) => column.tasks.includes(task));
-
-      if (currentColumn) {
-        currentColumn.tasks.splice(taskIndex, 1);
-
-        const newColumn = this.columns.find((column) => column.title === task.status);
-        if (newColumn) {
-          newColumn.tasks.push(task);
-        }
+        this.showAddForm = false;
       }
     },
     deleteTask(columnIndex, taskIndex) {
@@ -123,9 +113,21 @@ export default {
       const task = this.columns[columnIndex].tasks[taskIndex];
       this.newTask.name = task.name;
       this.newTask.assignee = task.assignee;
-      this.showForm = true;
+      this.showAddForm = false;
       this.editingTaskIndex = taskIndex;
       this.editingColumnIndex = columnIndex;
+    },
+    updateTask() {
+      this.nameError = this.newTask.name.trim() === '';
+      this.assigneeError = this.newTask.assignee.trim() === '';
+      if (!this.nameError && !this.assigneeError) {
+        this.columns[this.editingColumnIndex].tasks[this.editingTaskIndex] = { ...this.newTask };
+        this.newTask.name = '';
+        this.newTask.assignee = '';
+        this.newTask.status = 'To Do';
+        this.editingTaskIndex = null;
+        this.editingColumnIndex = null;
+      }
     },
     cancelEdit() {
       this.newTask.name = '';
@@ -133,7 +135,12 @@ export default {
       this.newTask.status = 'To Do';
       this.editingTaskIndex = null;
       this.editingColumnIndex = null;
-      this.showForm = false;
+    },
+    cancelAddTask() {
+      this.newTask.name = '';
+      this.newTask.assignee = '';
+      this.newTask.status = 'To Do';
+      this.showAddForm = false;
     },
     getColumnClass(index) {
       switch (index) {
@@ -146,6 +153,9 @@ export default {
         default:
           return '';
       }
+    },
+    isEditingTask(columnIndex, taskIndex) {
+      return this.editingTaskIndex === taskIndex && this.editingColumnIndex === columnIndex;
     },
   },
 };
@@ -314,5 +324,36 @@ export default {
 
 .not-draggable {
   cursor: not-allowed;
+}
+
+.edit-task-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+  background-color: #f1f3f5;
+  padding: 10px;
+  border-radius: 6px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.edit-task-form input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.edit-task-form button {
+  padding: 10px 20px;
+  background-color: #212121;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.edit-task-form button:hover {
+  background-color: #484848;
 }
 </style>
