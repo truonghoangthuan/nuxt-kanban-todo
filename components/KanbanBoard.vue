@@ -180,6 +180,7 @@ export default {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
+  cursor: pointer;
 }
 
 .task-header {
