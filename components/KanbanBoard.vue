@@ -22,7 +22,10 @@
           <div class="task-item">
             <div class="task-header">
               <div class="task-name">{{ element.name }}</div>
-              <i class="fas fa-trash-alt delete-icon" @click="deleteTask(columnIndex, index)"></i>
+              <div class="task-icons">
+                <i class="fas fa-pen edit-icon" @click="editTask(columnIndex, index)"></i>
+                <i class="fas fa-trash-alt delete-icon" @click="deleteTask(columnIndex, index)"></i>
+              </div>
             </div>
             <div class="assignee">Assignee: {{ element.assignee }}</div>
           </div>
@@ -104,6 +107,14 @@ export default {
       }
     },
     deleteTask(columnIndex, taskIndex) {
+      this.columns[columnIndex].tasks.splice(taskIndex, 1);
+    },
+    editTask(columnIndex, taskIndex) {
+      const task = this.columns[columnIndex].tasks[taskIndex];
+      this.newTask.name = task.name;
+      this.newTask.assignee = task.assignee;
+      this.showForm = true;
+      // remove the task for editing
       this.columns[columnIndex].tasks.splice(taskIndex, 1);
     },
     getColumnClass(index) {
@@ -199,9 +210,16 @@ export default {
   margin-top: 5px;
 }
 
-.delete-icon {
-  color: #e74c3c;
+.delete-icon,
+.edit-icon {
+  color: #555;
   cursor: pointer;
+  margin-left: 10px;
+  font-size: 0.8rem;
+}
+
+.edit-icon {
+  color: #555;
 }
 
 .status-select {
@@ -217,6 +235,7 @@ export default {
 }
 
 .add-task-button button {
+  width: 100%;
   padding: 10px 20px;
   background-color: #3498db;
   color: #fff;
