@@ -194,6 +194,10 @@ export default {
   cursor: pointer;
 }
 
+.task-item:hover {
+  background-color: #d8d8d8;
+}
+
 .task-header {
   display: flex;
   justify-content: space-between;
@@ -237,16 +241,16 @@ export default {
 .add-task-button button {
   width: 100%;
   padding: 10px 20px;
-  background-color: #3498db;
-  color: #fff;
-  border: none;
+  background-color: transparent;
+  color: #000000;
+  border: 2px solid #000000;
   border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .add-task-button button:hover {
-  background-color: #2980b9;
+  background-color: #f38181;
 }
 
 .add-task-form {
