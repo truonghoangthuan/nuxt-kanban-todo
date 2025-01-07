@@ -80,6 +80,8 @@ export default {
       assigneeError: false,
       nameError: false,
       dragging: false,
+      editingTaskIndex: null,
+      editingColumnIndex: null,
     };
   },
   methods: {
@@ -87,7 +89,15 @@ export default {
       this.nameError = this.newTask.name.trim() === '';
       this.assigneeError = this.newTask.assignee.trim() === '';
       if (!this.nameError && !this.assigneeError) {
-        this.columns[0].tasks.push({ ...this.newTask });
+        if (this.editingTaskIndex !== null && this.editingColumnIndex !== null) {
+          // Update the existing task
+          this.columns[this.editingColumnIndex].tasks[this.editingTaskIndex] = { ...this.newTask };
+          this.editingTaskIndex = null;
+          this.editingColumnIndex = null;
+        } else {
+          // Add a new task
+          this.columns[0].tasks.push({ ...this.newTask });
+        }
         this.newTask.name = '';
         this.newTask.assignee = '';
         this.newTask.status = 'To Do';
@@ -114,8 +124,8 @@ export default {
       this.newTask.name = task.name;
       this.newTask.assignee = task.assignee;
       this.showForm = true;
-      // remove the task for editing
-      this.columns[columnIndex].tasks.splice(taskIndex, 1);
+      this.editingTaskIndex = taskIndex;
+      this.editingColumnIndex = columnIndex;
     },
     getColumnClass(index) {
       switch (index) {
@@ -273,8 +283,8 @@ export default {
 
 .add-task-form button {
   padding: 10px 20px;
-  background-color: #3498db;
-  color: #fff;
+  background-color: #212121;
+  color: #ffffff;
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -282,7 +292,7 @@ export default {
 }
 
 .add-task-form button:hover {
-  background-color: #2980b9;
+  background-color: #484848;
 }
 
 .error-message {
