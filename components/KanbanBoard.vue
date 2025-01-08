@@ -2,7 +2,7 @@
   <div class="kanban-board">
     <div
       class="kanban-column"
-      v-for="(column, columnIndex) in columns"
+      v-for="(column, columnIndex) in columnsWithDefaults"
       :key="columnIndex"
       :class="getColumnClass(columnIndex)"
     >
@@ -33,8 +33,7 @@
               <span v-if="nameError" class="error-message">Task name cannot be empty</span>
               <input v-model="newTask.assignee" placeholder="Assignee" />
               <span v-if="assigneeError" class="error-message">Assignee cannot be empty</span>
-              <button @click="updateTask">Confirm</button>
-              <button @click="cancelEdit">Cancel</button>
+              <button @click="updateTask">Confirm</button> <button @click="cancelEdit">Cancel</button>
             </div>
           </div>
         </template>
@@ -59,9 +58,7 @@
 import draggable from 'vuedraggable';
 
 export default {
-  components: {
-    draggable,
-  },
+  components: { draggable },
   data() {
     return {
       columns: [
@@ -94,11 +91,32 @@ export default {
       editingColumnIndex: null,
     };
   },
+  computed: {
+    columnsWithDefaults() {
+      if (this.columns.length === 0) {
+        return [
+          { title: 'To Do', tasks: [] },
+          { title: 'In Progress', tasks: [] },
+          { title: 'Done', tasks: [] },
+        ];
+      }
+      return this.columns;
+    },
+  },
   methods: {
     addTask() {
       this.nameError = this.newTask.name.trim() === '';
       this.assigneeError = this.newTask.assignee.trim() === '';
       if (!this.nameError && !this.assigneeError) {
+        // Initialize columns with default structure if empty
+        if (this.columns.length === 0) {
+          this.columns = [
+            { title: 'To Do', tasks: [] },
+            { title: 'In Progress', tasks: [] },
+            { title: 'Done', tasks: [] },
+          ];
+        }
+        // Add the new task to the first column
         this.columns[0].tasks.push({ ...this.newTask });
         this.newTask.name = '';
         this.newTask.assignee = '';
