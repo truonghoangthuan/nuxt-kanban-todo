@@ -56,31 +56,16 @@
 
 <script>
 import draggable from 'vuedraggable';
+import { taskService } from '@/services/taskService';
 
 export default {
   components: { draggable },
   data() {
     return {
       columns: [
-        {
-          title: 'To Do',
-          tasks: [
-            { name: 'Task 1', assignee: 'Alice', status: 'To Do' },
-            { name: 'Task 2', assignee: 'Bob', status: 'To Do' },
-            { name: 'Task 3', assignee: 'Charlie', status: 'To Do' },
-          ],
-        },
-        {
-          title: 'In Progress',
-          tasks: [
-            { name: 'Task 4', assignee: 'David', status: 'In Progress' },
-            { name: 'Task 5', assignee: 'Eve', status: 'In Progress' },
-          ],
-        },
-        {
-          title: 'Done',
-          tasks: [{ name: 'Task 6', assignee: 'Frank', status: 'Done' }],
-        },
+        { title: 'To Do', tasks: [] },
+        { title: 'In Progress', tasks: [] },
+        { title: 'Done', tasks: [] },
       ],
       newTask: { name: '', assignee: '', status: 'To Do' },
       showAddForm: false,
@@ -90,6 +75,9 @@ export default {
       editingTaskIndex: null,
       editingColumnIndex: null,
     };
+  },
+  async mounted() {
+    this.loadTasks();
   },
   computed: {
     columnsWithDefaults() {
@@ -104,28 +92,42 @@ export default {
     },
   },
   methods: {
-    addTask() {
+    async loadTasks() {
+      try {
+        const tasks = await taskService.getAllTasks();
+        this.columns = [
+          { title: 'To Do', tasks: tasks.filter((task) => task.status === 'To Do') },
+          { title: 'In Progress', tasks: tasks.filter((task) => task.status === 'In Progress') },
+          { title: 'Done', tasks: tasks.filter((task) => task.status === 'Done') },
+        ];
+      } catch (error) {
+        console.error('Failed to load tasks:', error);
+      }
+    },
+    async addTask() {
       this.nameError = this.newTask.name.trim() === '';
       this.assigneeError = this.newTask.assignee.trim() === '';
       if (!this.nameError && !this.assigneeError) {
-        // Initialize columns with default structure if empty
-        if (this.columns.length === 0) {
-          this.columns = [
-            { title: 'To Do', tasks: [] },
-            { title: 'In Progress', tasks: [] },
-            { title: 'Done', tasks: [] },
-          ];
+        try {
+          const task = await taskService.createTask(this.newTask);
+          this.columns[0].tasks.push(task);
+          this.newTask.name = '';
+          this.newTask.assignee = '';
+          this.newTask.status = 'To Do';
+          this.showAddForm = false;
+        } catch (error) {
+          console.error('Failed to add task:', error);
         }
-        // Add the new task to the first column
-        this.columns[0].tasks.push({ ...this.newTask });
-        this.newTask.name = '';
-        this.newTask.assignee = '';
-        this.newTask.status = 'To Do';
-        this.showAddForm = false;
       }
     },
-    deleteTask(columnIndex, taskIndex) {
-      this.columns[columnIndex].tasks.splice(taskIndex, 1);
+    async deleteTask(columnIndex, taskIndex) {
+      const taskId = this.columns[columnIndex].tasks[taskIndex].id;
+      try {
+        await taskService.deleteTask(taskId);
+        this.columns[columnIndex].tasks.splice(taskIndex, 1);
+      } catch (error) {
+        console.error('Failed to delete task:', error);
+      }
     },
     editTask(columnIndex, taskIndex) {
       const task = this.columns[columnIndex].tasks[taskIndex];
@@ -135,16 +137,21 @@ export default {
       this.editingTaskIndex = taskIndex;
       this.editingColumnIndex = columnIndex;
     },
-    updateTask() {
+    async updateTask() {
       this.nameError = this.newTask.name.trim() === '';
       this.assigneeError = this.newTask.assignee.trim() === '';
       if (!this.nameError && !this.assigneeError) {
-        this.columns[this.editingColumnIndex].tasks[this.editingTaskIndex] = { ...this.newTask };
-        this.newTask.name = '';
-        this.newTask.assignee = '';
-        this.newTask.status = 'To Do';
-        this.editingTaskIndex = null;
-        this.editingColumnIndex = null;
+        try {
+          const task = await taskService.updateTask(this.editingTaskIndex, this.newTask);
+          this.columns[this.editingColumnIndex].tasks[this.editingTaskIndex] = task;
+          this.newTask.name = '';
+          this.newTask.assignee = '';
+          this.newTask.status = 'To Do';
+          this.editingTaskIndex = null;
+          this.editingColumnIndex = null;
+        } catch (error) {
+          console.error('Failed to update task:', error);
+        }
       }
     },
     cancelEdit() {
