@@ -17,6 +17,7 @@
         ghost-class="ghost"
         @start="dragging = true"
         @end="dragging = false"
+        @change="updateTaskStatus($event, columnIndex)"
       >
         <template #item="{ element, index }">
           <div class="task-item">
@@ -147,6 +148,19 @@ export default {
           this.editingColumnIndex = null;
         } catch (error) {
           console.error('Failed to update task:', error);
+        }
+      }
+    },
+    async updateTaskStatus(event, newColumnIndex) {
+      if (event.added) {
+        const task = event.added.element;
+        console.log('🚀 ~ updateTaskStatus ~ task:', task);
+        const newStatus = this.columns[newColumnIndex].title;
+        try {
+          task.status = newStatus;
+          await taskService.updateTask(task);
+        } catch (error) {
+          console.error('Failed to update task status:', error);
         }
       }
     },
