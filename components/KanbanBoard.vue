@@ -111,9 +111,6 @@ export default {
         try {
           const task = await taskService.createTask(this.newTask);
           this.columns[0].tasks.push(task);
-          this.newTask.name = '';
-          this.newTask.assignee = '';
-          this.newTask.status = 'To Do';
           this.showAddForm = false;
         } catch (error) {
           console.error('Failed to add task:', error);
@@ -131,8 +128,10 @@ export default {
     },
     editTask(columnIndex, taskIndex) {
       const task = this.columns[columnIndex].tasks[taskIndex];
+      this.newTask.id = task.id;
       this.newTask.name = task.name;
       this.newTask.assignee = task.assignee;
+      this.newTask.status = task.status;
       this.showAddForm = false;
       this.editingTaskIndex = taskIndex;
       this.editingColumnIndex = columnIndex;
@@ -142,11 +141,8 @@ export default {
       this.assigneeError = this.newTask.assignee.trim() === '';
       if (!this.nameError && !this.assigneeError) {
         try {
-          const task = await taskService.updateTask(this.editingTaskIndex, this.newTask);
+          const task = await taskService.updateTask(this.newTask);
           this.columns[this.editingColumnIndex].tasks[this.editingTaskIndex] = task;
-          this.newTask.name = '';
-          this.newTask.assignee = '';
-          this.newTask.status = 'To Do';
           this.editingTaskIndex = null;
           this.editingColumnIndex = null;
         } catch (error) {
@@ -155,16 +151,10 @@ export default {
       }
     },
     cancelEdit() {
-      this.newTask.name = '';
-      this.newTask.assignee = '';
-      this.newTask.status = 'To Do';
       this.editingTaskIndex = null;
       this.editingColumnIndex = null;
     },
     cancelAddTask() {
-      this.newTask.name = '';
-      this.newTask.assignee = '';
-      this.newTask.status = 'To Do';
       this.showAddForm = false;
     },
     getColumnClass(index) {
