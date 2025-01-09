@@ -34,7 +34,8 @@
               <span v-if="nameError" class="error-message">Task name cannot be empty</span>
               <input v-model="newTask.assignee" placeholder="Assignee" />
               <span v-if="assigneeError" class="error-message">Assignee cannot be empty</span>
-              <button @click="updateTask">Confirm</button> <button @click="cancelEdit">Cancel</button>
+              <button @click="updateTask">Confirm</button>
+              <button @click="cancelEdit">Cancel</button>
             </div>
           </div>
         </template>
@@ -82,14 +83,13 @@ export default {
   },
   computed: {
     columnsWithDefaults() {
-      if (this.columns.length === 0) {
-        return [
-          { title: 'To Do', tasks: [] },
-          { title: 'In Progress', tasks: [] },
-          { title: 'Done', tasks: [] },
-        ];
-      }
-      return this.columns;
+      return this.columns.length === 0
+        ? [
+            { title: 'To Do', tasks: [] },
+            { title: 'In Progress', tasks: [] },
+            { title: 'Done', tasks: [] },
+          ]
+        : this.columns;
     },
   },
   methods: {
@@ -154,7 +154,6 @@ export default {
     async updateTaskStatus(event, newColumnIndex) {
       if (event.added) {
         const task = event.added.element;
-        console.log('🚀 ~ updateTaskStatus ~ task:', task);
         const newStatus = this.columns[newColumnIndex].title;
         try {
           task.status = newStatus;
