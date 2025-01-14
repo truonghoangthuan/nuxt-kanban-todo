@@ -7,10 +7,12 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "start": "nuxt start"
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.13.6",
+    "defu": "^6.1.4",
     "nuxt": "^3.15.1",
     "vue": "latest",
     "vue-router": "latest",
