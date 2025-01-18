@@ -14,12 +14,14 @@
           </button>
         </div>
       </div>
-      <div v-if="showAddForm && columnIndex === 0" class="add-task-form">
-        <input v-model="newTask.name" placeholder="Task name" />
-        <span v-if="nameError" class="error-message">Task name cannot be empty</span>
-        <input v-model="newTask.assignee" placeholder="Assignee" />
-        <button @click="addTask">Confirm</button>
-      </div>
+      <Transition name="slide-fade">
+        <div v-if="showAddForm && columnIndex === 0" class="add-task-form">
+          <input v-model="newTask.name" placeholder="Task name" />
+          <span v-if="nameError" class="error-message">Task name cannot be empty</span>
+          <input v-model="newTask.assignee" placeholder="Assignee" />
+          <button @click="addTask">Confirm</button>
+        </div>
+      </Transition>
       <draggable
         :list="column.tasks"
         :group="{ name: 'tasks', pull: true, put: true }"
@@ -40,13 +42,15 @@
               </div>
             </div>
             <div class="assignee">Assignee: {{ element.assignee === '' ? 'Undefined' : element.assignee }}</div>
-            <div v-if="isEditingTask(columnIndex, index)" class="edit-task-form">
-              <input v-model="newTask.name" placeholder="Task name" />
-              <span v-if="nameError" class="error-message">Task name cannot be empty</span>
-              <input v-model="newTask.assignee" placeholder="Assignee" />
-              <button @click="updateTask">Confirm</button>
-              <button @click="cancelEdit">Cancel</button>
-            </div>
+            <Transition name="slide-fade">
+              <div v-if="isEditingTask(columnIndex, index)" class="edit-task-form">
+                <input v-model="newTask.name" placeholder="Task name" />
+                <span v-if="nameError" class="error-message">Task name cannot be empty</span>
+                <input v-model="newTask.assignee" placeholder="Assignee" />
+                <button @click="updateTask">Confirm</button>
+                <button @click="cancelEdit">Cancel</button>
+              </div>
+            </Transition>
           </div>
         </template>
       </draggable>
