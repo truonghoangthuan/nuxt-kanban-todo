@@ -166,6 +166,9 @@ export default {
     cancelEdit() {
       this.editingTaskIndex = null;
       this.editingColumnIndex = null;
+      this.newTask.name = '';
+      this.newTask.assignee = '';
+      this.newTask.status = 'To Do';
     },
     cancelAddTask() {
       this.showAddForm = false;
@@ -366,6 +369,7 @@ export default {
 }
 
 .edit-task-form input {
+  font-family: 'JetBrains Mono', monospace;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
