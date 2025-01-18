@@ -161,6 +161,7 @@ export default {
     cancelEdit() {
       this.editingTaskIndex = null;
       this.editingColumnIndex = null;
+      this.newTask.id = null;
       this.newTask.name = '';
       this.newTask.assignee = '';
       this.newTask.status = 'To Do';
