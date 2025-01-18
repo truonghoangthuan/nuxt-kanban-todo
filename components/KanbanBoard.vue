@@ -28,12 +28,11 @@
                 <i class="fas fa-trash-alt delete-icon" @click="deleteTask(columnIndex, index)"></i>
               </div>
             </div>
-            <div class="assignee">Assignee: {{ element.assignee }}</div>
+            <div class="assignee">Assignee: {{ element.assignee === '' ? 'Undefined' : element.assignee }}</div>
             <div v-if="isEditingTask(columnIndex, index)" class="edit-task-form">
               <input v-model="newTask.name" placeholder="Task name" />
               <span v-if="nameError" class="error-message">Task name cannot be empty</span>
               <input v-model="newTask.assignee" placeholder="Assignee" />
-              <span v-if="assigneeError" class="error-message">Assignee cannot be empty</span>
               <button @click="updateTask">Confirm</button>
               <button @click="cancelEdit">Cancel</button>
             </div>
@@ -49,7 +48,6 @@
         <input v-model="newTask.name" placeholder="Task name" />
         <span v-if="nameError" class="error-message">Task name cannot be empty</span>
         <input v-model="newTask.assignee" placeholder="Assignee" />
-        <span v-if="assigneeError" class="error-message">Assignee cannot be empty</span>
         <button @click="addTask">Confirm</button>
       </div>
     </div>
@@ -71,7 +69,6 @@ export default {
       ],
       newTask: { name: '', assignee: '', status: 'To Do' },
       showAddForm: false,
-      assigneeError: false,
       nameError: false,
       dragging: false,
       editingTaskIndex: null,
@@ -107,8 +104,7 @@ export default {
     },
     async addTask() {
       this.nameError = this.newTask.name.trim() === '';
-      this.assigneeError = this.newTask.assignee.trim() === '';
-      if (!this.nameError && !this.assigneeError) {
+      if (!this.nameError) {
         try {
           const task = await taskService.createTask(this.newTask);
           this.columns[0].tasks.push(task);
@@ -139,8 +135,7 @@ export default {
     },
     async updateTask() {
       this.nameError = this.newTask.name.trim() === '';
-      this.assigneeError = this.newTask.assignee.trim() === '';
-      if (!this.nameError && !this.assigneeError) {
+      if (!this.nameError) {
         try {
           const task = await taskService.updateTask(this.newTask);
           this.columns[this.editingColumnIndex].tasks[this.editingTaskIndex] = task;
