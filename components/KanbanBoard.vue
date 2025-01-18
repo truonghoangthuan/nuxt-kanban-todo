@@ -8,6 +8,17 @@
     >
       <div class="kanban-column-header">
         <h2>{{ column.title }}</h2>
+        <div v-if="columnIndex === 0" class="add-task-button">
+          <button @click="showAddForm ? cancelAddTask() : (cancelEdit(), (showAddForm = true))">
+            <i :class="showAddForm ? 'fas fa-minus' : 'fas fa-plus'"></i>
+          </button>
+        </div>
+      </div>
+      <div v-if="showAddForm && columnIndex === 0" class="add-task-form">
+        <input v-model="newTask.name" placeholder="Task name" />
+        <span v-if="nameError" class="error-message">Task name cannot be empty</span>
+        <input v-model="newTask.assignee" placeholder="Assignee" />
+        <button @click="addTask">Confirm</button>
       </div>
       <draggable
         :list="column.tasks"
@@ -39,17 +50,6 @@
           </div>
         </template>
       </draggable>
-      <div v-if="columnIndex === 0" class="add-task-button">
-        <button @click="showAddForm ? cancelAddTask() : (cancelEdit(), (showAddForm = true))">
-          {{ showAddForm ? 'Cancel' : 'Add Task' }}
-        </button>
-      </div>
-      <div v-if="showAddForm && columnIndex === 0" class="add-task-form">
-        <input v-model="newTask.name" placeholder="Task name" />
-        <span v-if="nameError" class="error-message">Task name cannot be empty</span>
-        <input v-model="newTask.assignee" placeholder="Assignee" />
-        <button @click="addTask">Confirm</button>
-      </div>
     </div>
   </div>
 </template>

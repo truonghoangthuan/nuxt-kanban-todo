@@ -103,15 +103,8 @@ button {
   border: 1px solid #ccc;
 }
 
-.add-task-button {
-  display: flex;
-  justify-content: center;
-  margin-top: 15px;
-}
-
 .add-task-button button {
   width: 100%;
-  padding: 10px 20px;
   background-color: transparent;
   color: #000000;
   border: 2px solid #000000;
@@ -128,7 +121,7 @@ button {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-top: 15px;
+  margin-bottom: 15px;
   background-color: #f1f3f5;
   padding: 10px;
   border-radius: 6px;
