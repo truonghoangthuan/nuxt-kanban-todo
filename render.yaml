@@ -3,7 +3,6 @@ services:
     name: nuxt-kanban-todo
     runtime: docker
     buildCommand: docker build -t nuxt-kanban-todo .
-    startCommand: docker run -p 3000:3000 nuxt-kanban-todo
     envVars:
       - key: BASE_URL
         sync: false
